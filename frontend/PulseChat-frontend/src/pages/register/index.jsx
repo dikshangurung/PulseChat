@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-// import { RegisterUser } from "../../apicalls/users";
+import { RegisterUser } from "../../apicalls/users";
 import { HideLoader, ShowLoader } from "../../redux/loaderSlice";
 
 function Register() {
@@ -14,21 +14,23 @@ function Register() {
 		password: "",
 	});
 
-	// const register = async () => {
-	// 	try {
-	// 		dispatch(ShowLoader());
-	// 		const response = await RegisterUser(user);
-	// 		dispatch(HideLoader());
-	// 		if (response.success) {
-	// 			toast.success(response.message);
-	// 		} else {
-	// 			toast.error(response.message);
-	// 		}
-	// 	} catch (error) {
-	// 		dispatch(HideLoader());
-	// 		toast.error(error.message);
-	// 	}
-	// };
+	const register = async () => {
+		try {
+			dispatch(ShowLoader());
+			const response = await RegisterUser(user);
+			dispatch(HideLoader());
+			if (response.success) {
+				console.log(response);
+				toast.success(response.message);
+			} else {
+				console.log(response);
+				toast.error(response.message);
+			}
+		} catch (error) {
+			dispatch(HideLoader());
+			toast.error(error.message);
+		}
+	};
 
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -75,7 +77,7 @@ function Register() {
 							? "contained-btn"
 							: "disabled-btn"
 					}
-					// onClick={register}
+					onClick={register}
 				>
 					Register
 				</button>

@@ -84,14 +84,14 @@ router.post("/login", async (req, res) => {
 
 router.get("/get-current-user", authMiddleware, async (req, res) => {
 	try {
-		const user = await User.findOne({ _id: req.body.userId });
+		const user = await User.findOne({ _id: req.userId }); // Use req.userId instead of req.body.userId
 		res.send({
 			success: true,
 			message: "User fetched successfully",
 			data: user,
 		});
 	} catch (error) {
-		res.send({
+		res.status(500).send({
 			message: error.message,
 			success: false,
 		});
@@ -100,53 +100,53 @@ router.get("/get-current-user", authMiddleware, async (req, res) => {
 
 // get all users except current user
 
-router.get("/get-all-users", authMiddleware, async (req, res) => {
-	try {
-		const allUsers = await User.find({ _id: { $ne: req.body.userId } });
-		res.send({
-			success: true,
-			message: "Users fetched successfully",
-			data: allUsers,
-		});
-	} catch (error) {
-		res.send({
-			message: error.message,
-			success: false,
-		});
-	}
-});
+// router.get("/get-all-users", authMiddleware, async (req, res) => {
+// 	try {
+// 		const allUsers = await User.find({ _id: { $ne: req.body.userId } });
+// 		res.send({
+// 			success: true,
+// 			message: "Users fetched successfully",
+// 			data: allUsers,
+// 		});
+// 	} catch (error) {
+// 		res.send({
+// 			message: error.message,
+// 			success: false,
+// 		});
+// 	}
+// });
 
-// update user profile picture
+// // update user profile picture
 
-router.post("/update-profile-picture", authMiddleware, async (req, res) => {
-	try {
-		const image = req.body.image;
+// router.post("/update-profile-picture", authMiddleware, async (req, res) => {
+// 	try {
+// 		const image = req.body.image;
 
-		// upload image to cloudinary and get url
+// 		// upload image to cloudinary and get url
 
-		const uploadedImage = await cloudinary.uploader.upload(image, {
-			folder: "ksr",
-		});
+// 		const uploadedImage = await cloudinary.uploader.upload(image, {
+// 			folder: "ksr",
+// 		});
 
-		// update user profile picture
+// 		// update user profile picture
 
-		const user = await User.findOneAndUpdate(
-			{ _id: req.body.userId },
-			{ profilePic: uploadedImage.secure_url },
-			{ new: true }
-		);
+// 		const user = await User.findOneAndUpdate(
+// 			{ _id: req.body.userId },
+// 			{ profilePic: uploadedImage.secure_url },
+// 			{ new: true }
+// 		);
 
-		res.send({
-			success: true,
-			message: "Profile picture updated successfully",
-			data: user,
-		});
-	} catch (error) {
-		res.send({
-			message: error.message,
-			success: false,
-		});
-	}
-});
+// 		res.send({
+// 			success: true,
+// 			message: "Profile picture updated successfully",
+// 			data: user,
+// 		});
+// 	} catch (error) {
+// 		res.send({
+// 			message: error.message,
+// 			success: false,
+// 		});
+// 	}
+// });
 
 module.exports = router;
