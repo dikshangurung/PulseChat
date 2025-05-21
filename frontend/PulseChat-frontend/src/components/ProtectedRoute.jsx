@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { GetAllChats } from "../apicalls/chats";
+// import { GetAllChats } from "../apicalls/chats";
 import { GetAllUsers, GetCurrentUser } from "../apicalls/users";
 // import { GetCurrentUser } from "../apicalls/users";
 import { HideLoader, ShowLoader } from "../redux/loaderSlice";
@@ -19,12 +19,12 @@ function ProtectedRoute({ children }) {
 			const response = await GetCurrentUser();
 			console.log(response);
 			const allUsersResponse = await GetAllUsers();
-			const allChatsResponse = await GetAllChats();
+			// const allChatsResponse = await GetAllChats();
 			dispatch(HideLoader());
 			if (response.success) {
 				dispatch(SetUser(response.data));
 				dispatch(SetAllUsers(allUsersResponse.data));
-				dispatch(SetAllChats(allChatsResponse.data));
+				// dispatch(SetAllChats(allChatsResponse.data));
 			} else {
 				toast.error(response.message);
 				localStorage.removeItem("token");
