@@ -31,12 +31,12 @@ router.get("/get-all-chats", authMiddleware, async (req, res) => {
 	try {
 		const chats = await Chat.find({
 			members: {
-				$in: [req.body.userId],
+				$in: [req.userId],
 			},
 		})
 			.populate("members")
 			.populate("lastMessage")
-			.sort({ updatedAt: -1 });
+			.sort({ updatedAt: -1 }); //sort according to last message
 		res.send({
 			success: true,
 			message: "Chats fetched successfully",
@@ -97,4 +97,4 @@ router.get("/get-all-chats", authMiddleware, async (req, res) => {
 //   }
 // });
 
-// module.exports = router;
+module.exports = router;

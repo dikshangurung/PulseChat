@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+	--color-primary: #302550;
 	--color-brand-50: #fff7ed;
 	--color-brand-100: #ffedd5;
 	--color-brand-200: #fed7aa;
@@ -11,4 +12,50 @@
 	--color-brand-700: #c2410c;
 	--color-brand-800: #9a3412;
 	--color-brand-900: #7c2d12;
+}
+* {
+	font-family: "Montserrat" !important;
+	font-size: 15px;
+	font-weight: 600;
+	color: #303030;
+}
+
+input {
+	height: 40px;
+	border: 1px solid rgb(113, 125, 182);
+	padding-left: 20px;
+}
+
+input:focus {
+	outline: none;
+	border: 1px solid rgb(23, 28, 52);
+}
+
+.outlined-btn {
+	border: 1px solid #302550;
+	color: #302550;
+	padding: 10px 20px;
+	height: 40px;
+	text-transform: uppercase;
+}
+
+.contained-btn {
+	background-color: #302550;
+	color: white;
+	padding: 5px 20px;
+	height: 40px;
+	text-transform: uppercase;
+}
+
+.disabled-btn {
+	background-color: #cac8cd;
+	color: rgb(92, 90, 90);
+	padding: 5px 20px;
+	height: 40px;
+	text-transform: uppercase;
+	opacity: 0.5;
+}
+
+.file-input {
+	border: none !important;
 }
