@@ -65,28 +65,36 @@ function ChatArea() {
 		}
 	};
 
-	// const clearUnreadMessages = async () => {
-	// 	try {
-	// 		socket.emit("clear-unread-messages", {
-	// 			chat: selectedChat._id,
-	// 			members: selectedChat.members.map((mem) => mem._id),
-	// 		});
+	const clearUnreadMessages = async () => {
+		try {
+			dispatch(ShowLoader());
+			const response = await ClearChatMessages(selectedChat._id);
+			dispatch(HideLoader());
+			if (response.success) {
+				// update unread messages count in selected chat
+				const updatedChats = allChats.map((chat) => {
+					if (chat._id === selectedChat._id) {
+						return response.data;
+					}
+					return chat;
+				});
+				dispatch(SetAllChats(updatedChats));
 
-	// 		const response = await ClearChatMessages(selectedChat._id);
-
-	// 		if (response.success) {
-	// 			const updatedChats = allChats.map((chat) => {
-	// 				if (chat._id === selectedChat._id) {
-	// 					return response.data;
-	// 				}
-	// 				return chat;
-	// 			});
-	// 			dispatch(SetAllChats(updatedChats));
-	// 		}
-	// 	} catch (error) {
-	// 		toast.error(error.message);
-	// 	}
-	// };
+				// set all messages as read
+				// setMessages((prevMessages) => {
+				// 	return prevMessages.map((message) => {
+				// 		return {
+				// 			...message,
+				// 			read: true,
+				// 		};
+				// 	});
+				// });
+			}
+		} catch (error) {
+			dispatch(HideLoader());
+			toast.error(error.message);
+		}
+	};
 
 	const getDateInRegualarFormat = (date) => {
 		let result = "";
@@ -109,6 +117,7 @@ function ChatArea() {
 
 	useEffect(() => {
 		getMessages();
+		clearUnreadMessages();
 		// if (selectedChat?.lastMessage?.sender !== user._id) {
 		// 	clearUnreadMessages();
 		// }
