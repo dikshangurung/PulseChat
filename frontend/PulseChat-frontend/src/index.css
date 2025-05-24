@@ -13,8 +13,8 @@
 	--color-brand-800: #9a3412;
 	--color-brand-900: #7c2d12;
 }
-* {
-	font-family: "Montserrat" !important;
+body {
+	font-family: "Montserrat";
 	font-size: 15px;
 	font-weight: 600;
 	color: #303030;

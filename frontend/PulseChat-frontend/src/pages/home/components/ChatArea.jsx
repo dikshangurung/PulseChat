@@ -10,7 +10,7 @@ import store from "../../../redux/store";
 // import store from "../../../redux/store";
 import EmojiPicker from "emoji-picker-react";
 
-function ChatArea({ socket }) {
+function ChatArea() {
 	const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
 	const [isReceipentTyping, setIsReceipentTyping] = React.useState(false);
 	const dispatch = useDispatch();
@@ -23,21 +23,20 @@ function ChatArea({ socket }) {
 		(mem) => mem._id !== user._id
 	);
 
-	const sendNewMessage = async (image) => {
+	const sendNewMessage = async () => {
 		try {
 			const message = {
 				chat: selectedChat._id,
 				sender: user._id,
 				text: newMessage,
-				image,
 			};
 			// send message to server using socket
-			socket.emit("send-message", {
-				...message,
-				members: selectedChat.members.map((mem) => mem._id),
-				createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
-				read: false,
-			});
+			// socket.emit("send-message", {
+			// 	...message,
+			// 	members: selectedChat.members.map((mem) => mem._id),
+			// 	createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
+			// 	read: false,
+			// });
 
 			// send message to server to save in db
 			const response = await SendMessage(message);
@@ -66,28 +65,28 @@ function ChatArea({ socket }) {
 		}
 	};
 
-	const clearUnreadMessages = async () => {
-		try {
-			socket.emit("clear-unread-messages", {
-				chat: selectedChat._id,
-				members: selectedChat.members.map((mem) => mem._id),
-			});
+	// const clearUnreadMessages = async () => {
+	// 	try {
+	// 		socket.emit("clear-unread-messages", {
+	// 			chat: selectedChat._id,
+	// 			members: selectedChat.members.map((mem) => mem._id),
+	// 		});
 
-			const response = await ClearChatMessages(selectedChat._id);
+	// 		const response = await ClearChatMessages(selectedChat._id);
 
-			if (response.success) {
-				const updatedChats = allChats.map((chat) => {
-					if (chat._id === selectedChat._id) {
-						return response.data;
-					}
-					return chat;
-				});
-				dispatch(SetAllChats(updatedChats));
-			}
-		} catch (error) {
-			toast.error(error.message);
-		}
-	};
+	// 		if (response.success) {
+	// 			const updatedChats = allChats.map((chat) => {
+	// 				if (chat._id === selectedChat._id) {
+	// 					return response.data;
+	// 				}
+	// 				return chat;
+	// 			});
+	// 			dispatch(SetAllChats(updatedChats));
+	// 		}
+	// 	} catch (error) {
+	// 		toast.error(error.message);
+	// 	}
+	// };
 
 	const getDateInRegualarFormat = (date) => {
 		let result = "";
@@ -110,65 +109,65 @@ function ChatArea({ socket }) {
 
 	useEffect(() => {
 		getMessages();
-		if (selectedChat?.lastMessage?.sender !== user._id) {
-			clearUnreadMessages();
-		}
+		// if (selectedChat?.lastMessage?.sender !== user._id) {
+		// 	clearUnreadMessages();
+		// }
 
-		// receive message from server using socket
-		socket.on("receive-message", (message) => {
-			const tempSelectedChat = store.getState().userReducer.selectedChat;
-			if (tempSelectedChat._id === message.chat) {
-				setMessages((messages) => [...messages, message]);
-			}
+		// // receive message from server using socket
+		// socket.on("receive-message", (message) => {
+		// 	const tempSelectedChat = store.getState().userReducer.selectedChat;
+		// 	if (tempSelectedChat._id === message.chat) {
+		// 		setMessages((messages) => [...messages, message]);
+		// 	}
 
-			if (
-				tempSelectedChat._id === message.chat &&
-				message.sender !== user._id
-			) {
-				clearUnreadMessages();
-			}
-		});
+		// 	if (
+		// 		tempSelectedChat._id === message.chat &&
+		// 		message.sender !== user._id
+		// 	) {
+		// 		clearUnreadMessages();
+		// 	}
+		// });
 
-		// clear unread messages from server using socket
-		socket.on("unread-messages-cleared", (data) => {
-			const tempAllChats = store.getState().userReducer.allChats;
-			const tempSelectedChat = store.getState().userReducer.selectedChat;
+		// // clear unread messages from server using socket
+		// socket.on("unread-messages-cleared", (data) => {
+		// 	const tempAllChats = store.getState().userReducer.allChats;
+		// 	const tempSelectedChat = store.getState().userReducer.selectedChat;
 
-			if (data.chat === tempSelectedChat._id) {
-				// update unreadmessages count in selected chat
-				const updatedChats = tempAllChats.map((chat) => {
-					if (chat._id === data.chat) {
-						return {
-							...chat,
-							unreadMessages: 0,
-						};
-					}
-					return chat;
-				});
-				dispatch(SetAllChats(updatedChats));
+		// 	if (data.chat === tempSelectedChat._id) {
+		// 		// update unreadmessages count in selected chat
+		// 		const updatedChats = tempAllChats.map((chat) => {
+		// 			if (chat._id === data.chat) {
+		// 				return {
+		// 					...chat,
+		// 					unreadMessages: 0,
+		// 				};
+		// 			}
+		// 			return chat;
+		// 		});
+		// 		dispatch(SetAllChats(updatedChats));
 
-				// set all messages as read
-				setMessages((prevMessages) => {
-					return prevMessages.map((message) => {
-						return {
-							...message,
-							read: true,
-						};
-					});
-				});
-			}
-		});
+		// 		// set all messages as read
+		// 		setMessages((prevMessages) => {
+		// 			return prevMessages.map((message) => {
+		// 				return {
+		// 					...message,
+		// 					read: true,
+		// 				};
+		// 			});
+		// 		});
+		// 	}
+		// });
 
-		// receipent typing
-		socket.on("started-typing", (data) => {
-			const selctedChat = store.getState().userReducer.selectedChat;
-			if (data.chat === selctedChat._id && data.sender !== user._id) {
-				setIsReceipentTyping(true);
-			}
-			setTimeout(() => {
-				setIsReceipentTyping(false);
-			}, 1500);
-		});
+		// // receipent typing
+		// socket.on("started-typing", (data) => {
+		// 	const selctedChat = store.getState().userReducer.selectedChat;
+		// 	if (data.chat === selctedChat._id && data.sender !== user._id) {
+		// 		setIsReceipentTyping(true);
+		// 	}
+		// 	setTimeout(() => {
+		// 		setIsReceipentTyping(false);
+		// 	}, 1500);
+		// });
 	}, [selectedChat]);
 
 	useEffect(() => {
@@ -317,15 +316,15 @@ function ChatArea({ socket }) {
 					value={newMessage}
 					onChange={(e) => {
 						setNewMessage(e.target.value);
-						socket.emit("typing", {
-							chat: selectedChat._id,
-							members: selectedChat.members.map((mem) => mem._id),
-							sender: user._id,
-						});
+						// socket.emit("typing", {
+						// 	chat: selectedChat._id,
+						// 	members: selectedChat.members.map((mem) => mem._id),
+						// 	sender: user._id,
+						// });
 					}}
 				/>
 				<button
-					className="bg-primary text-white py-1 px-5 rounded h-max"
+					className="bg-primary py-1 px-5 rounded h-max cursor-pointer"
 					onClick={() => sendNewMessage("")}
 				>
 					<i className="ri-send-plane-2-line text-white"></i>
