@@ -10,7 +10,7 @@ import store from "../../../redux/store";
 // import store from "../../../redux/store";
 import EmojiPicker from "emoji-picker-react";
 
-function ChatArea() {
+function ChatArea({ socket }) {
 	const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
 	const [isReceipentTyping, setIsReceipentTyping] = React.useState(false);
 	const dispatch = useDispatch();
@@ -37,6 +37,8 @@ function ChatArea() {
 			// 	createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
 			// 	read: false,
 			// });
+
+			//send message to server using socket
 
 			// send message to server to save in db
 			const response = await SendMessage(message);
