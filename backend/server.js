@@ -27,7 +27,7 @@ const io = new Server(server, {
 // 		console.log("Client disconnected");
 // 	});
 // });
-
+/*
 io.on("connection", (socket) => {
 	// console.log("New client connected");
 
@@ -51,7 +51,30 @@ io.on("connection", (socket) => {
 		console.log("Client disconnected");
 	});
 });
+*/
 
+io.on("connection", (socket) => {
+	socket.on("join-room", (userId) => {
+		socket.join(userId);
+		console.log(`User ${userId} joined the room`);
+	});
+	//send message to clients who are present in members array
+	socket.on("send-message", (message) => {
+		io.to(message.members[0])
+			.to(message.members[1])
+			.emit("receive-message", message);
+		console.log(
+			`Message sent to ${message.members[0]} and ${message.members[1]}: ${message.text}`
+		);
+	});
+	// Handle online users
+	socket.on("online-users", (users) => {
+		io.emit("online-users", users);
+	});
+	socket.on("disconnect", () => {
+		console.log("Client disconnected");
+	});
+});
 const dbConfig = require("./config/dbConfig");
 
 const PORT = process.env.PORT || 5000;

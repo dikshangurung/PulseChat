@@ -5,8 +5,8 @@ import UserSearch from "./components/UserSearch";
 import UsersList from "./components/UsersList";
 import { io } from "socket.io-client";
 
+const socket = io("http://localhost:5000");
 function Home() {
-	const socket = io("http://localhost:5000");
 	const [searchKey, setSearchKey] = React.useState("");
 	const { selectedChat, user } = useSelector((state) => state.userReducer);
 	const [onlineUsers, setOnlineUsers] = React.useState([]);
@@ -19,23 +19,38 @@ function Home() {
 	// 		console.log("Message received from server:", data);
 	// 	});
 	// }, []);
+	// //Current user has joined the room
+	// useEffect(() => {
+	// 	//join the room with user ID
+	// 	if (!user) return;
+	// 	socket.emit("join-room", user._id);
+
+	// 	//Testing purpose from Hari to Ram
+	// 	socket.emit("send-message", {
+	// 		text: "Hello from Hari",
+	// 		sender: user._id,
+	// 		receiver: "68318efb9fb843582bfd1c39", // Replace with actual receiver ID
+	// 	});
+
+	// 	//Receive message from Hari
+	// 	socket.on("receive-message", ({ text, sender }) => {
+	// 		console.log(`Message from ${sender}: ${text}`);
+	// 	});
+
+	// 	socket.on("online-users", (users) => {
+	// 		setOnlineUsers(users);
+	// 	});
+
+	// 	return () => {
+	// 		socket.off("online-users"); // Clean up the event listener
+	// 		socket.disconnect();
+	// 	};
+	// }, [user]);
 	//Current user has joined the room
 	useEffect(() => {
 		//join the room with user ID
 		if (!user) return;
 		socket.emit("join-room", user._id);
-
-		//Testing purpose from Hari to Ram
-		socket.emit("send-message", {
-			text: "Hello from Hari",
-			sender: user._id,
-			receiver: "68318efb9fb843582bfd1c39", // Replace with actual receiver ID
-		});
-
-		//Receive message from Hari
-		socket.on("receive-message", ({ text, sender }) => {
-			console.log(`Message from ${sender}: ${text}`);
-		});
 
 		socket.on("online-users", (users) => {
 			setOnlineUsers(users);
@@ -46,7 +61,6 @@ function Home() {
 			socket.disconnect();
 		};
 	}, [user]);
-
 	return (
 		<div className="flex gap-5">
 			{/* 1st part   user search , userslist/chatlist */}

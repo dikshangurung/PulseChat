@@ -27,21 +27,25 @@ function ChatArea({ socket }) {
 		try {
 			const message = {
 				chat: selectedChat._id,
+
 				sender: user._id,
 				text: newMessage,
 			};
 			// send message to server using socket
-			// socket.emit("send-message", {
-			// 	...message,
-			// 	members: selectedChat.members.map((mem) => mem._id),
-			// 	createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
-			// 	read: false,
-			// });
-
-			//send message to server using socket
+			socket.emit("send-message", {
+				...message,
+				members: selectedChat.members.map((mem) => mem._id),
+				createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
+				read: false,
+			});
 
 			// send message to server to save in db
-			const response = await SendMessage(message);
+			const response = await SendMessage(message, {
+				...message,
+				members: selectedChat.members.map((mem) => mem._id),
+				createdAt: moment().format("DD-MM-YYYY hh:mm:ss"),
+				read: false,
+			});
 
 			if (response.success) {
 				setNewMessage("");
@@ -119,25 +123,25 @@ function ChatArea({ socket }) {
 
 	useEffect(() => {
 		getMessages();
-		clearUnreadMessages();
-		// if (selectedChat?.lastMessage?.sender !== user._id) {
-		// 	clearUnreadMessages();
-		// }
+		// clearUnreadMessages();
+		if (selectedChat?.lastMessage?.sender !== user._id) {
+			clearUnreadMessages();
+		}
 
-		// // receive message from server using socket
-		// socket.on("receive-message", (message) => {
-		// 	const tempSelectedChat = store.getState().userReducer.selectedChat;
-		// 	if (tempSelectedChat._id === message.chat) {
-		// 		setMessages((messages) => [...messages, message]);
-		// 	}
+		// receive message from server using socket
+		socket.on("receive-message", (message) => {
+			const tempSelectedChat = store.getState().userReducer.selectedChat;
+			if (tempSelectedChat._id === message.chat) {
+				setMessages((messages) => [...messages, message]);
+			}
 
-		// 	if (
-		// 		tempSelectedChat._id === message.chat &&
-		// 		message.sender !== user._id
-		// 	) {
-		// 		clearUnreadMessages();
-		// 	}
-		// });
+			if (
+				tempSelectedChat._id === message.chat &&
+				message.sender !== user._id
+			) {
+				clearUnreadMessages();
+			}
+		});
 
 		// // clear unread messages from server using socket
 		// socket.on("unread-messages-cleared", (data) => {
