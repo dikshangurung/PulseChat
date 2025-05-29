@@ -66,7 +66,11 @@ function Home() {
 			{/* 1st part   user search , userslist/chatlist */}
 			<div className="w-96">
 				<UserSearch searchKey={searchKey} setSearchKey={setSearchKey} />
-				<UsersList searchKey={searchKey} onlineUsers={onlineUsers} />
+				<UsersList
+					searchKey={searchKey}
+					onlineUsers={onlineUsers}
+					socket={socket}
+				/>
 			</div>
 
 			{/* 2nd part   chatbox */}

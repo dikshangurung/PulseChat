@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateNewChat } from "../../../apicalls/chats";
 import { HideLoader, ShowLoader } from "../../../redux/loaderSlice";
 import { SetAllChats, SetSelectedChat } from "../../../redux/userSlice";
 import moment from "moment";
+import { use } from "react";
+import store from "../../../redux/store";
 
-function UsersList({ searchKey, onlineUsers }) {
+function UsersList({ searchKey, onlineUsers, socket }) {
 	const { allUsers, allChats, user, selectedChat } = useSelector(
 		(state) => state.userReducer
 	);
@@ -113,7 +115,37 @@ function UsersList({ searchKey, onlineUsers }) {
 			);
 		}
 	};
+	useEffect(() => {
+		socket.on("receive-message", (message) => {
+			// if the chat area opened is not equal to chat in message , then increase unread messages by 1 and update last message
+			const tempSelectedChat = store.getState().userReducer.selectedChat;
+			let tempAllChats = store.getState().userReducer.allChats;
+			if (tempSelectedChat?._id !== message.chat) {
+				const updatedAllChats = tempAllChats.map((chat) => {
+					if (chat._id === message.chat) {
+						return {
+							...chat,
+							unreadMessages: (chat?.unreadMessages || 0) + 1,
+							lastMessage: message,
+							updatedAt: message.createdAt,
+						};
+					}
+					return chat;
+				});
+				tempAllChats = updatedAllChats;
+			}
 
+			// always latest message chat will be on top
+			const latestChat = tempAllChats.find(
+				(chat) => chat._id === message.chat
+			);
+			const otherChats = tempAllChats.filter(
+				(chat) => chat._id !== message.chat
+			);
+			tempAllChats = [latestChat, ...otherChats];
+			dispatch(SetAllChats(tempAllChats));
+		});
+	}, []);
 	return (
 		<div className="flex flex-col gap-3 mt-5 lg:w-96 xl:w-96 md:w-60 sm:w-60">
 			{getData().map((chatObjOrUserObj) => {

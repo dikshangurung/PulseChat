@@ -67,6 +67,12 @@ io.on("connection", (socket) => {
 			`Message sent to ${message.members[0]} and ${message.members[1]}: ${message.text}`
 		);
 	});
+	// clear unread messages
+	socket.on("clear-unread-messages", (data) => {
+		io.to(data.members[0])
+			.to(data.members[1])
+			.emit("unread-messages-cleared", data);
+	});
 	// Handle online users
 	socket.on("online-users", (users) => {
 		io.emit("online-users", users);
