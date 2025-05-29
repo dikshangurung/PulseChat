@@ -73,6 +73,12 @@ io.on("connection", (socket) => {
 			.to(data.members[1])
 			.emit("unread-messages-cleared", data);
 	});
+
+	// typing event
+	socket.on("typing", (data) => {
+		io.to(data.members[0]).to(data.members[1]).emit("started-typing", data);
+	});
+
 	// Handle online users
 	socket.on("online-users", (users) => {
 		io.emit("online-users", users);
