@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/login/index";
 import Register from "./pages/register/index";
 import Home from "./pages/home/index";
+import Profile from "./pages/profile/index";
 import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
 	return (
@@ -15,6 +16,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Home />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/profile"
+						element={
+							<ProtectedRoute>
+								<Profile />
 							</ProtectedRoute>
 						}
 					/>
