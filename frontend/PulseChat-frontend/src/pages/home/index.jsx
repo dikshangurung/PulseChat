@@ -52,7 +52,9 @@ function Home() {
 		if (!user) return;
 		socket.emit("join-room", user._id);
 
-		socket.on("online-users", (users) => {
+		socket.emit("came-online", user._id);
+
+		socket.on("online-users-updated", (users) => {
 			setOnlineUsers(users);
 		});
 

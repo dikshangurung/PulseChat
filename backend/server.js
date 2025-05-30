@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
 	});
 });
 */
-
+let onlineUsers = [];
 io.on("connection", (socket) => {
 	socket.on("join-room", (userId) => {
 		socket.join(userId);
@@ -79,12 +79,19 @@ io.on("connection", (socket) => {
 		io.to(data.members[0]).to(data.members[1]).emit("started-typing", data);
 	});
 
-	// Handle online users
-	socket.on("online-users", (users) => {
-		io.emit("online-users", users);
+	// online users
+
+	socket.on("came-online", (userId) => {
+		if (!onlineUsers.includes(userId)) {
+			onlineUsers.push(userId);
+		}
+
+		io.emit("online-users-updated", onlineUsers);
 	});
-	socket.on("disconnect", () => {
-		console.log("Client disconnected");
+
+	socket.on("went-offline", (userId) => {
+		onlineUsers = onlineUsers.filter((user) => user !== userId);
+		io.emit("online-users-updated", onlineUsers);
 	});
 });
 const dbConfig = require("./config/dbConfig");
